@@ -1,13 +1,27 @@
 ---
-title: "Graphs for policy"
+title: "Graphs for the Policy Paper"
 author: "Jakub Przewoski"
 date: "2024-04-01"
 output: html_document
 ---
 
+```{css, echo=FALSE}
+h1, h4 {
+  text-align: center;
+}
+```
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 ```
+
+<br>
+
+# Introduction
+
+This file produces graphs for my policy paper titled **"Energy Transition and Labour Market Outcomes: The case of Coal Miners in Poland"**. This assignment has been submitted as part of the course *"Skills: Visualizing Data & Writing for Policy Makers"*.
+
 
 ```{r, libs, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -23,7 +37,7 @@ library(extrafont)
 loadfonts(device="win")
 ```
 
-# 1
+## Graph 1: Share of Fuel in Domsetic Energy Production
 ```{r, graph-1}
 prop_df <- read_csv("../data/International Energy Agency - domestic energy production in Poland.csv")
 
@@ -58,14 +72,12 @@ p1 + geom_line(linewidth=2) +
         text = element_text(family = "Bahnschrift"))
 
   
-ggsave('../output/line.png', dpi=600,type='cairo')
+# ggsave('../output/line.png', dpi=600,type='cairo')
 ```
 
 
-# 2.
+## 2: Map of Employment in Mining or Quarrying 
 ```{r, graph-2}
-
-#zatrudnienie w sekcji B wg stanu na dzień 31 grudnia 2021 roku
 
 empl_2021 = read_csv2('../data/zatrudnienie w sekcji B, 2021.csv',)
 
@@ -117,18 +129,18 @@ ggplot() +
    size=2.1, fill="white", fontface="bold") + 
   theme(text = element_text(family = "Bahnschrift"))
   
-ggsave("../output/map.png", dpi=600, type='cairo')
+# ggsave("../output/map.png", dpi=600, type='cairo')
 ```
 
 
 
-# 3.
+## 3: Graph of 5 Largest Coal Producers in Europe
 
 ```{r, graph-4}
 # data is for 2021
 # loading dfs
-filepath <- "../data/eurostat energy supply files/nrg_bal_c__custom_10666396_spreadsheet.xlsx"
-filepath_pop <- "../data/eurostat energy supply files/cens_21ag_page_spreadsheet.xlsx"
+filepath <- "../data/nrg_bal_c__custom_10666396_spreadsheet.xlsx"
+filepath_pop <- "../data/cens_21ag_page_spreadsheet.xlsx"
 fuel_names <- read_excel(filepath, sheet=1,range="E16:E87", col_names = FALSE)
 
 country_names <- read_excel(filepath, sheet=2, range="C78:C119")
@@ -216,13 +228,13 @@ p4 + geom_col(position=position_dodge(), color="black") +
 
   
   
-ggsave("../output/bar1.png", dpi=600, type='cairo')
+# ggsave("../output/bar1.png", dpi=600, type='cairo')
 ```
 
 
-# 4.	
+## 4: Graph of Largest employers in Silesia Voivodship
 ```{r, graph-5}
-slask_empl <- read_excel("../data/slaskie/zatrudnienie_slaskie_exc.xlsx",sheet=2, na = "-")
+slask_empl <- read_excel("../data/zatrudnienie_slaskie_exc.xlsx",sheet=2, na = "-")
 
 slask_empl$Year <- as.numeric(slask_empl$Year)
 
@@ -280,12 +292,12 @@ p5 + geom_bar(stat="identity", width=1, color="black") +
     text = element_text(family = "Bahnschrift")
   )
   
-ggsave("../output/pie.png", dpi=600, type='cairo')
+# ggsave("../output/pie.png", dpi=600, type='cairo')
 ```
 
 
 
-# 6
+## 5: Graph of Mean Wage by Selected Sections
 ```{r, graph-6}
 wage_path = "../data/przecietne_zatrudnienie_i_wynagrodzenia_w_gospodarce_narodowej_w_2022_r._-_dane_ostateczne._dane_do_wykresow.xlsx"
 wages <- read_excel(wage_path, sheet=3, range="A3:C23")
@@ -338,6 +350,6 @@ p6 + geom_col(color="black") +
     )
 
 
-ggsave("../output/mean_wage.png", dpi=600,type='cairo')
+# ggsave("../output/mean_wage.png", dpi=600,type='cairo')
 ```
 
