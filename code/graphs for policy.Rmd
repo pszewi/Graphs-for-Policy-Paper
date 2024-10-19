@@ -1,0 +1,343 @@
+---
+title: "Graphs for policy"
+author: "Jakub Przewoski"
+date: "2024-04-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, libs, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(readxl)
+library(ggrepel)
+library(maps)
+library(stringr)
+library(sf)
+library(mapoland)
+library(ggsci)
+library(extrafont)
+loadfonts(device="win")
+```
+
+# 1
+```{r, graph-1}
+prop_df <- read_csv("../data/International Energy Agency - domestic energy production in Poland.csv")
+
+prop_df <- prop_df %>% 
+  rename(
+    fuel = `domestic energy production in Poland`
+  )
+
+
+line_chart <- prop_df %>% 
+  group_by(Year) %>% 
+  summarize(
+    mix_prop = (Value/sum(Value, na.rm=TRUE)),
+    fuel = fuel
+  )
+
+p1 <- ggplot(data=line_chart, aes(x=Year, y=mix_prop, color=fuel))
+p1 + geom_line(linewidth=2) + 
+  labs(
+    title='Share of Fuel in Domestic Energy Production, 2000-2022',
+    caption='Source: International Energy Agency',
+    x='Year',
+    y='Share of Domestic Energy Production',
+    color='Fuel type'
+  ) +
+  scale_y_continuous(labels = scales::percent) + 
+  scale_color_uchicago(palette = "dark")+
+  theme_light() + 
+    theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_line( size=.1, color="lightgrey" ),
+        text = element_text(family = "Bahnschrift"))
+
+  
+ggsave('../output/line.png', dpi=600,type='cairo')
+```
+
+
+# 2.
+```{r, graph-2}
+
+#zatrudnienie w sekcji B wg stanu na dzień 31 grudnia 2021 roku
+
+empl_2021 = read_csv2('../data/zatrudnienie w sekcji B, 2021.csv',)
+
+
+# renaming
+empl_2021 <- empl_2021 %>%
+  rename(
+    empl = `Sekcja B;ogółem;2021;[osoba]`
+  ) %>%
+  select(empl)
+
+
+voivData <- voivData %>% 
+  mutate(empl_2021$empl)
+
+
+# Load shapefile for voivodeships of Poland
+# prints layers
+
+st_layers("../data/shapefiles/pol_adm_gov_v02_20220414_shp")
+
+
+pol <- st_read(dsn="../data/shapefiles/pol_adm_gov_v02_20220414_shp", layer='pol_admbnda_adm1_gov_v02_20220414')
+
+coords <- tibble(x = numeric(), 
+                 y = numeric())
+
+for(i in (pol$ADM1_PL)){
+  x = mean(st_coordinates(pol[pol$ADM1_PL==i,]$geometry)[,"X"])
+  y = mean(st_coordinates(pol[pol$ADM1_PL==i,]$geometry)[,"Y"])
+  
+  coords <- coords %>% 
+    add_row(x = x, y=y)
+}
+
+pol <- cbind(pol, coords)
+
+# Plot the voivodeships map
+ggplot() +
+  geom_sf(data = pol, aes(fill=voivData$empl), color = "black") +
+  labs(
+    title = "Employment in Mining or Quarrying",
+    subtitle = 'Count as of 31st December 2021',
+    caption = "Source: Statistics Poland",
+    fill='Number employed') + 
+  scale_fill_gradient(low='#ADB17D', high='#3E3E23') + 
+  theme_void() + 
+   geom_label(data = pol, aes(x=x, y=y, label = ADM1_PL),
+   size=2.1, fill="white", fontface="bold") + 
+  theme(text = element_text(family = "Bahnschrift"))
+  
+ggsave("../output/map.png", dpi=600, type='cairo')
+```
+
+
+
+# 3.
+
+```{r, graph-4}
+# data is for 2021
+# loading dfs
+filepath <- "../data/eurostat energy supply files/nrg_bal_c__custom_10666396_spreadsheet.xlsx"
+filepath_pop <- "../data/eurostat energy supply files/cens_21ag_page_spreadsheet.xlsx"
+fuel_names <- read_excel(filepath, sheet=1,range="E16:E87", col_names = FALSE)
+
+country_names <- read_excel(filepath, sheet=2, range="C78:C119")
+
+sheet_names <- excel_sheets(filepath) 
+
+pop2021 <- read_excel(filepath_pop, sheet=3, range="A12:B42", col_names = F)
+# renaming vars
+pop2021 <- pop2021 %>% 
+  rename(
+    Country = ...1, 
+    pop = ...2
+  )
+
+# unpacking sheets from the file with many sheets
+sheets <- lapply(sheet_names, function(X) readxl::read_excel(filepath, sheet = X, range='I11:I52',na=":" ))
+
+# creating a df that combines them
+df_sheets = tibble(country_names)
+df_sheets[1,1] ='EU27'
+
+# loop to combine the datasets
+for(i in (3:74)){
+df_sheets <- cbind(df_sheets,sheets[i])
+}
+
+# changing col names to have a nice df
+fuel_names <- fuel_names %>% 
+  mutate(across('...1', str_replace_all, ' ', '_')) %>% 
+  mutate(across('...1', str_replace_all, '-', '_'))
+
+new_col_names <- c('Country', as.list(fuel_names$...1))
+
+colnames(df_sheets) <- new_col_names
+
+# dropping na's
+df_sheets <- df_sheets %>% 
+  drop_na()
+
+# mergin population df
+df_sheets <- merge(df_sheets, pop2021, by="Country", all.x=T)
+
+# making the df longer to do different vars next to each other on the plot
+df_sheets <- df_sheets %>% 
+  select(Country, Anthracite,Coking_coal, 
+         Other_bituminous_coal,
+         Lignite) %>% 
+  mutate(
+    Total_c = rowSums(select(., !c('Country')))
+  )
+
+sheets_longer <- pivot_longer(df_sheets, !Country, names_to='coal_type',
+                              values_to='Value')
+
+
+# making the plot, maybe add some other fuels to showcase everything - I could do that with melt or pivot longer but subset first
+coal_producers <- c('Germany','Poland','Czechia','Italy','Bulgaria')
+
+# custom pallete
+fill_labs <-c('Anthracite','Coking coal', 'Lignite','Other bituminous coal', 'Total coal')
+
+p4 <- ggplot(data=subset(sheets_longer, Country %in% coal_producers),
+             aes(x=reorder(Country, desc(Value)), y=Value, fill=coal_type))
+
+p4 + geom_col(position=position_dodge(), color="black") + 
+  labs(
+    y='Coal Production',
+    x='',
+    title='5 Largest Coal Producers in Europe (2022)',
+    subtitle='In 1000 tonnes of oil equivalent',
+    caption='Source: Eurostat',
+    fill='') + 
+  scale_fill_uchicago(palette = "dark", labels=fill_labs) +
+  theme_light() + 
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_line( size=.1, color="lightgrey"),
+        legend.position="bottom",
+        text = element_text(family = "Bahnschrift"), 
+        axis.text.x=element_text(size=12), 
+        axis.text.y=element_text(size=12), 
+        legend.text = element_text(size=11.5), 
+        axis.title.y = element_text(size=13), 
+        title=element_text(size=14))
+
+  
+  
+ggsave("../output/bar1.png", dpi=600, type='cairo')
+```
+
+
+# 4.	
+```{r, graph-5}
+slask_empl <- read_excel("../data/slaskie/zatrudnienie_slaskie_exc.xlsx",sheet=2, na = "-")
+
+slask_empl$Year <- as.numeric(slask_empl$Year)
+
+# splitting up one section 
+section_b_c_d_e <- slask_empl %>% 
+  filter(Typ == "Sekcja_B_C_D_E" & Year==2022)
+
+section_c <- slask_empl %>% 
+  filter(Typ == "Sekcja_C" & Year==2022)
+
+
+Sekcja_B_D_E <- section_b_c_d_e[1,3] - section_c[1,3]
+
+# pie chart for 2022
+slask_empl_2022 <- slask_empl %>% 
+  filter(Year == 2022) %>% 
+  mutate(
+    Typ = trimws(Typ)) %>% 
+  add_row(Typ="Sekcja_B_D_E", Year=2022, Value=106520) %>% 
+  filter(Typ !="Sekcja_B_C_D_E") %>% 
+  mutate(
+    Value = ifelse(is.na(Value), 0, Value),
+    prop_empl = (Value/sum(Value))) %>% 
+  arrange(desc(prop_empl))
+
+# making a "rest" category for the chart
+rest <- (1-slask_empl_2022[1,4]-slask_empl_2022[2,4]-slask_empl_2022[3,4]-slask_empl_2022[4,4]-slask_empl_2022[5,4]-slask_empl_2022[6,4]-slask_empl_2022[7,4]-slask_empl_2022[8,4])
+
+
+
+pie_labs <- c( "Section C", "Other Sections", "Section G", "Section P","Section: B+D+E", "Section Q", "Section F", "Section H", "Section O")
+
+pie_slask <- slask_empl_2022 %>% 
+  filter(prop_empl >=0.0485)  %>% 
+  add_row(Typ = 'Rest', Year=2022, Value=0, prop_empl=0.1660608) %>% 
+  arrange(desc(prop_empl)) %>% 
+  mutate(eng_labs = pie_labs)
+  
+
+pie_slask$eng_labs <- factor(pie_slask$eng_labs, levels = pie_slask$eng_labs)
+
+# plotting
+p5 <- ggplot(data=pie_slask, aes(x="", y=reorder(prop_empl, prop_empl), fill=eng_labs))
+
+p5 + geom_bar(stat="identity", width=1, color="black") + 
+  coord_polar("y", start=0) + 
+  labs(
+    title='Largest employers in Silesia Voivodship',
+    subtitle='By section of the economy, 2022',
+    caption='Source: Statistics Poland ',
+    fill='') +
+  scale_fill_uchicago(palette = "dark") + 
+    theme_void() + 
+  theme(
+    text = element_text(family = "Bahnschrift")
+  )
+  
+ggsave("../output/pie.png", dpi=600, type='cairo')
+```
+
+
+
+# 6
+```{r, graph-6}
+wage_path = "../data/przecietne_zatrudnienie_i_wynagrodzenia_w_gospodarce_narodowej_w_2022_r._-_dane_ostateczne._dane_do_wykresow.xlsx"
+wages <- read_excel(wage_path, sheet=3, range="A3:C23")
+
+num_filter <- c(2, 3, 5, 9, 11, 12, 14, 15, 17, 18)
+
+wages <-wages  %>%
+  select(sections, mean_wage) %>% 
+  mutate(mean_wage = mean_wage*1000) %>% 
+  mutate(across('sections', str_replace_all, '∆', '')) %>%
+  mutate(indicator = ifelse(sections == 'Mining and quarrying', T, F)) %>% 
+  drop_na %>% 
+  mutate(
+    nums = seq(1, 19, 1)
+  ) %>% 
+  filter(
+    !(nums %in% num_filter)
+  )
+
+
+mean_wage_overall = 6362.90 
+# (Source: https://stat.gov.pl/download/gfx/portalinformacyjny/en/defaultaktualnosci/3292/11/7/1/average_paid_employment_wages_and_salaries_in_the_national_economy_in_2022__final_data.pdf, page 2)
+
+
+p6 <- ggplot(wages, aes(x=reorder(sections, mean_wage), y=mean_wage, fill=indicator))
+
+p6 + geom_col(color="black") +
+  coord_flip() + 
+  labs(
+    title='Mean Wage by Selected Sections, 2022',
+    subtitle='Dotted line represents national mean wage',
+    x='',
+    y='',
+    caption='Source: Statistics Poland') + 
+  scale_y_continuous(labels = function(x) paste(x, "PLN")) +
+  scale_fill_manual(values = c('#C16622', "#0F425C")) +
+  geom_hline(aes(yintercept=mean_wage_overall), linetype='dashed') + 
+  theme_light() + 
+  theme(legend.position= 'none', panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_line( size=.1, color="lightgrey" ), 
+        text = element_text(family = "Bahnschrift"), 
+        axis.text.x=element_text(size=12, hjust=0.3), 
+        axis.text.y = element_text(size=11.5))+
+  scale_x_discrete(
+    labels=c("Electricity, gas, steam and hot water supply" = "Electricity, gas, steam and\nhot water supply",
+             "Water supply: sewerage and waste management; remediation" = "Water supply: sewerage and\nwaste management; remediation",
+             "Agriculture, forestry, hunting and fishing"="Agriculture, forestry,\nhunting and fishing",
+             "Accommodation and food service activities"="Accommodation and\nfood service activities")
+    )
+
+
+ggsave("../output/mean_wage.png", dpi=600,type='cairo')
+```
+
