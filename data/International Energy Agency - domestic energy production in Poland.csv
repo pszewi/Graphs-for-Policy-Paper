@@ -1,0 +1,162 @@
+"domestic energy production in Poland",Value,Year,Units
+"Coal",2985137,2000, TJ
+"Coal",2989912,2001, TJ
+"Coal",2980874,2002, TJ
+"Coal",2965194,2003, TJ
+"Coal",2896434,2004, TJ
+"Coal",2882903,2005, TJ
+"Coal",2828517,2006, TJ
+"Coal",2616278,2007, TJ
+"Coal",2550201,2008, TJ
+"Coal",2362088,2009, TJ
+"Coal",2318697,2010, TJ
+"Coal",2332852,2011, TJ
+"Coal",2420784,2012, TJ
+"Coal",2392159,2013, TJ
+"Coal",2262292,2014, TJ
+"Coal",2255289,2015, TJ
+"Coal",2190026,2016, TJ
+"Coal",2084766,2017, TJ
+"Coal",1978766,2018, TJ
+"Coal",1867129,2019, TJ
+"Coal",1683402,2020, TJ
+"Coal",1766510,2021, TJ
+"Coal",1735446,2022, TJ
+"Crude oil",30018,2000, TJ
+"Crude oil",35144,2001, TJ
+"Crude oil",33183,2002, TJ
+"Crude oil",32533,2003, TJ
+"Crude oil",38488,2004, TJ
+"Crude oil",37463,2005, TJ
+"Crude oil",34054,2006, TJ
+"Crude oil",30715,2007, TJ
+"Crude oil",33115,2008, TJ
+"Crude oil",29208,2009, TJ
+"Crude oil",31292,2010, TJ
+"Crude oil",28527,2011, TJ
+"Crude oil",29357,2012, TJ
+"Crude oil",41153,2013, TJ
+"Crude oil",40596,2014, TJ
+"Crude oil",39619,2015, TJ
+"Crude oil",42984,2016, TJ
+"Crude oil",41969,2017, TJ
+"Crude oil",43203,2018, TJ
+"Crude oil",42225,2019, TJ
+"Crude oil",40105,2020, TJ
+"Crude oil",38033,2021, TJ
+"Crude oil",38223,2022, TJ
+"Natural gas",138724,2000, TJ
+"Natural gas",146204,2001, TJ
+"Natural gas",149433,2002, TJ
+"Natural gas",151197,2003, TJ
+"Natural gas",164428,2004, TJ
+"Natural gas",162629,2005, TJ
+"Natural gas",162462,2006, TJ
+"Natural gas",163146,2007, TJ
+"Natural gas",154486,2008, TJ
+"Natural gas",153980,2009, TJ
+"Natural gas",154617,2010, TJ
+"Natural gas",161185,2011, TJ
+"Natural gas",163569,2012, TJ
+"Natural gas",160066,2013, TJ
+"Natural gas",156014,2014, TJ
+"Natural gas",154196,2015, TJ
+"Natural gas",148744,2016, TJ
+"Natural gas",147035,2017, TJ
+"Natural gas",145239,2018, TJ
+"Natural gas",143467,2019, TJ
+"Natural gas",142202,2020, TJ
+"Natural gas",139833,2021, TJ
+"Natural gas",136957,2022, TJ
+"Hydro",7581,2000, TJ
+"Hydro",8369,2001, TJ
+"Hydro",8204,2002, TJ
+"Hydro",6015,2003, TJ
+"Hydro",7495,2004, TJ
+"Hydro",7923,2005, TJ
+"Hydro",7351,2006, TJ
+"Hydro",8467,2007, TJ
+"Hydro",7747,2008, TJ
+"Hydro",8549,2009, TJ
+"Hydro",10512,2010, TJ
+"Hydro",8391,2011, TJ
+"Hydro",7333,2012, TJ
+"Hydro",8780,2013, TJ
+"Hydro",7858,2014, TJ
+"Hydro",6595,2015, TJ
+"Hydro",7704,2016, TJ
+"Hydro",9214,2017, TJ
+"Hydro",7091,2018, TJ
+"Hydro",7050,2019, TJ
+"Hydro",7626,2020, TJ
+"Hydro",8421,2021, TJ
+"Hydro",7086,2022, TJ
+"Wind, solar, etc.",142,2000, TJ
+"Wind, solar, etc.",170,2001, TJ
+"Wind, solar, etc.",483,2002, TJ
+"Wind, solar, etc.",758,2003, TJ
+"Wind, solar, etc.",833,2004, TJ
+"Wind, solar, etc.",968,2005, TJ
+"Wind, solar, etc.",1467,2006, TJ
+"Wind, solar, etc.",2333,2007, TJ
+"Wind, solar, etc.",3598,2008, TJ
+"Wind, solar, etc.",4812,2009, TJ
+"Wind, solar, etc.",6973,2010, TJ
+"Wind, solar, etc.",12591,2011, TJ
+"Wind, solar, etc.",18373,2012, TJ
+"Wind, solar, etc.",23431,2013, TJ
+"Wind, solar, etc.",29960,2014, TJ
+"Wind, solar, etc.",42088,2015, TJ
+"Wind, solar, etc.",48882,2016, TJ
+"Wind, solar, etc.",57494,2017, TJ
+"Wind, solar, etc.",50531,2018, TJ
+"Wind, solar, etc.",61001,2019, TJ
+"Wind, solar, etc.",68357,2020, TJ
+"Wind, solar, etc.",77360,2021, TJ
+"Wind, solar, etc.",104431,2022, TJ
+"Heat",,2000, TJ
+"Heat",,2001, TJ
+"Heat",,2002, TJ
+"Heat",,2003, TJ
+"Heat",534,2004, TJ
+"Heat",514,2005, TJ
+"Heat",590,2006, TJ
+"Heat",659,2007, TJ
+"Heat",554,2008, TJ
+"Heat",217,2009, TJ
+"Heat",598,2010, TJ
+"Heat",917,2011, TJ
+"Heat",690,2012, TJ
+"Heat",896,2013, TJ
+"Heat",1207,2014, TJ
+"Heat",1192,2015, TJ
+"Heat",497,2016, TJ
+"Heat",662,2017, TJ
+"Heat",460,2018, TJ
+"Heat",529,2019, TJ
+"Heat",459,2020, TJ
+"Heat",777,2021, TJ
+"Heat",777,2022, TJ
+"Biofuels and waste",156065,2000, TJ
+"Biofuels and waste",166093,2001, TJ
+"Biofuels and waste",169388,2002, TJ
+"Biofuels and waste",172353,2003, TJ
+"Biofuels and waste",177821,2004, TJ
+"Biofuels and waste",188114,2005, TJ
+"Biofuels and waste",202526,2006, TJ
+"Biofuels and waste",202091,2007, TJ
+"Biofuels and waste",225003,2008, TJ
+"Biofuels and waste",253759,2009, TJ
+"Biofuels and waste",285834,2010, TJ
+"Biofuels and waste",309025,2011, TJ
+"Biofuels and waste",346370,2012, TJ
+"Biofuels and waste",343424,2013, TJ
+"Biofuels and waste",321698,2014, TJ
+"Biofuels and waste",343231,2015, TJ
+"Biofuels and waste",351696,2016, TJ
+"Biofuels and waste",348417,2017, TJ
+"Biofuels and waste",481337,2018, TJ
+"Biofuels and waste",479469,2019, TJ
+"Biofuels and waste",479607,2020, TJ
+"Biofuels and waste",475691,2021, TJ
+"Biofuels and waste",464344,2022, TJ
